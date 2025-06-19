@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Help Me</title>
+</head>
+<body>
+  <h3>📍 Where are you?</h3>
+  <select id="locationSelect">
+    <option>Loading...</option>
+  </select>
+  <br><br>
+  <button onclick="send()">Send</button>
+  <p id="status"></p>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEN8nO1sO6j3Uu2f82GF68RzsHZLyCOaqoRQUVfthEjsEeferB6i-KEN-aUqjqt6gebA/exec";
+
+    fetch(SCRIPT_URL)
+      .then(res => res.json())
+      .then(locations => {
+        const select = document.getElementById("locationSelect");
+        select.innerHTML = "";
+        locations.forEach(loc => {
+          const option = document.createElement("option");
+          option.value = loc;
+          option.textContent = loc;
+          select.appendChild(option);
+        });
+      });
+
+    function send() {
+      const location = document.getElementById("locationSelect").value;
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "location=" + encodeURIComponent(location)
+      })
+      .then(() => {
+        document.getElementById("status").innerText = "✅ Sent!";
+      })
+      .catch(err => {
+        document.getElementById("status").innerText = "❌ Error: " + err;
+      });
+    }
+  </script>
+</body>
+</html>
